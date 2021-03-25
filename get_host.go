@@ -12,7 +12,7 @@ func (c *Client) GetBaseHost() (*url.URL, error) {
 
 	// Add the query params:
 	values := url.Values{}
-	values.Set("app_name", "audiusclient")
+	values.Set("app_name", c.appName)
 	parsedHost.RawQuery = values.Encode()
 
 	return parsedHost, nil
