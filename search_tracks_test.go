@@ -13,6 +13,8 @@ func TestSearchTracks(t *testing.T) {
 	}
 
 	t.Logf("Search tracks response: %v", searchTracksResponse)
-	log.Println(searchTracksResponse.Data[0].ID)
+	log.Printf("%+v", searchTracksResponse.Data[0].User.ProfilePicture)
+	log.Println()
+	log.Printf("%+v", searchTracksResponse.Data[0].User.CoverPhoto)
 	log.Println()
 }
