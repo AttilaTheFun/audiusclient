@@ -13,6 +13,6 @@ func TestSearchPlaylists(t *testing.T) {
 	}
 
 	t.Logf("Search playlists response: %v", searchPlaylistsResponse)
-	log.Println(searchPlaylistsResponse.Data[0].ID)
+	log.Println(searchPlaylistsResponse.Data[1].User.ProfilePicture)
 	log.Println()
 }

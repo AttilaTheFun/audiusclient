@@ -1,10 +1,10 @@
 package audiusclient
 
 type APIUser struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	Handle string `json:"handle"`
+	ID string `json:"id"`
 
+	Name       string `json:"name"`
+	Handle     string `json:"handle"`
 	Bio        string `json:"bio"`
 	Location   string `json:"location"`
 	IsVerified bool   `json:"is_verified"`
@@ -22,9 +22,9 @@ type APIUser struct {
 }
 
 type APITrack struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
+	ID string `json:"id"`
 
+	Title          string `json:"title"`
 	Description    string `json:"description"`
 	Duration       int    `json:"duration"`
 	Mood           string `json:"mood"`
@@ -43,17 +43,17 @@ type APITrack struct {
 }
 
 type APIPlaylist struct {
-	ID           string `json:"id"`
-	PlaylistName string `json:"playlist_name"`
+	ID string `json:"id"`
 
-	Description string `json:"description"`
-	IsAlbum     bool   `json:"is_album"`
+	PlaylistName string `json:"playlist_name"`
+	Description  string `json:"description"`
+	IsAlbum      bool   `json:"is_album"`
 
 	Artwork map[string]string `json:"artwork"`
 
+	TotalPlayCount int `json:"total_play_count"`
 	RepostCount    int `json:"repost_count"`
 	FavoriteCount  int `json:"favorite_count"`
-	TotalPlayCount int `json:"total_play_count"`
 
 	User APIUser `json:"user"`
 }
