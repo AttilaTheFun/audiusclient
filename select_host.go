@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type selectHostResponseType struct {
@@ -12,6 +13,9 @@ type selectHostResponseType struct {
 }
 
 func (c *Client) SelectHost() error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	var getHostsResponse selectHostResponseType
 
 	// Parse the URL:
@@ -44,10 +48,41 @@ func (c *Client) SelectHost() error {
 	}
 
 	// Select a host:
-	if len(getHostsResponse.Data) == 0 {
+	potentialHosts := getHostsResponse.Data
+	if len(potentialHosts) == 0 {
 		return errors.New("Unable to retrieve Audius host")
 	}
-	c.currentHost = getHostsResponse.Data[0]
+	// First look for an "official" audius host if we can find one.
+	selectedHost := matchingSuffix(potentialHosts, "audius.co")
+	if selectedHost == "" {
+		// Then look for a "staked" host if that failed.
+		selectedHost = matchingSubstring(potentialHosts, "staked")
+	}
+	if selectedHost == "" {
+		// Finally just fall back on the first host if all else fails.
+		selectedHost = potentialHosts[0]
+	}
+	c.currentHost = selectedHost
 
 	return nil
+}
+
+func matchingSuffix(strs []string, suffix string) string {
+	for _, str := range strs {
+		if strings.HasSuffix(str, suffix) {
+			return str
+		}
+	}
+
+	return ""
+}
+
+func matchingSubstring(strs []string, substring string) string {
+	for _, str := range strs {
+		if strings.Contains(str, substring) {
+			return str
+		}
+	}
+
+	return ""
 }
