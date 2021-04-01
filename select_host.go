@@ -50,7 +50,7 @@ func (c *Client) SelectHost() error {
 	// Select a host:
 	potentialHosts := getHostsResponse.Data
 	if len(potentialHosts) == 0 {
-		return errors.New("Unable to retrieve Audius host")
+		return errors.New("unable to retrieve Audius host")
 	}
 	// First look for an "official" audius host if we can find one.
 	selectedHost := matchingSuffix(potentialHosts, "audius.co")

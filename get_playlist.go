@@ -52,7 +52,7 @@ func (c *Client) GetPlaylist(playlistID string) (GetPlaylistResponse, error) {
 		return getPlaylistResponse, err
 	}
 	if len(internalResponse.Data) == 0 {
-		return getPlaylistResponse, errors.New("Unable to find the playlist for the given ID.")
+		return getPlaylistResponse, errors.New("unable to find the playlist for the given ID")
 	}
 	getPlaylistResponse.Data = internalResponse.Data[0]
 

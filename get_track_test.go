@@ -7,7 +7,7 @@ import (
 
 func TestGetTrack(t *testing.T) {
 	client := NewClient("audiusclient")
-	getTrackResponse, err := client.GetTrack("BRG99") // "n3RMe"
+	getTrackResponse, err := client.GetTrack("aWE6g") // "n3RMe"
 	if err != nil {
 		t.Fatalf("Failed to get track with error: %v", err.Error())
 	}
