@@ -62,7 +62,7 @@ func (c *Client) GetResolvedURL(audiusURL string) (resourceType string, resource
 	resourcePath := strings.TrimPrefix(redirectedURL.Path, "/v1/")
 	resourcePathComponents := strings.Split(resourcePath, "/")
 	if len(resourcePathComponents) != 2 {
-		err = errors.New("Invalid resource path")
+		err = errors.New("invalid resource path")
 		return
 	}
 	resourceID = resourcePathComponents[1]
@@ -74,7 +74,7 @@ func (c *Client) GetResolvedURL(audiusURL string) (resourceType string, resource
 	case "users":
 		resourceType = "user"
 	default:
-		err = errors.New("Invalid resource path")
+		err = errors.New("invalid resource path")
 		return
 	}
 

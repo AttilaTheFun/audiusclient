@@ -7,7 +7,7 @@ import (
 
 func TestGetResolvedURL(t *testing.T) {
 	client := NewClient("audiusclient")
-	resourceType, resourceID, err := client.GetResolvedURL("https://audius.co/disclosure/market-monday-test-294542")
+	resourceType, resourceID, err := client.GetResolvedURL("https://audius.co/teendaze/four-more-years-313549")
 	if err != nil {
 		t.Fatalf("Failed to get track stream with error: %v", err.Error())
 	}
