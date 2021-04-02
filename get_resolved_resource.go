@@ -7,12 +7,8 @@ import (
 	"strings"
 )
 
-type GetResolvedURLResponse struct {
-	Data APITrack
-}
-
-// GetResolvedURL - Resolves an audius url into a resource type (playlist, track, or user) and resource ID.
-func (c *Client) GetResolvedURL(audiusURL string) (resourceType string, resourceID string, err error) {
+// GetResolvedResource - Resolves an audius url into a resource type (playlist, track, or user) and resource ID.
+func (c *Client) GetResolvedResource(audiusURL string) (resourceType string, resourceID string, err error) {
 
 	// Parse the Audius host url:
 	parsedURL, err := c.GetHost()
