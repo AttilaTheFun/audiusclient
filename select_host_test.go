@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestGetHosts(t *testing.T) {
+func TestSelectHost(t *testing.T) {
 	client := NewClient("audiusclient")
 	err := client.SelectHost()
 	if err != nil {

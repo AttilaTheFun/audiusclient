@@ -1,57 +1,23 @@
 package audiusclient
 
 import (
-	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"net/http"
 	"strings"
 )
-
-type selectHostResponseType struct {
-	Data []string
-}
 
 func (c *Client) SelectHost() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	var getHostsResponse selectHostResponseType
-
-	// Parse the URL:
-	parsedURL, err := c.GetBaseHost()
+	// Fetch all of the potential hosts:
+	potentialHosts, err := c.GetHosts()
 	if err != nil {
 		return err
 	}
-
-	// Fetch the hosts:
-	urlString := parsedURL.String()
-	res, err := http.Get(urlString)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		// Parse the error:
-		body, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			return err
-		}
-
-		return errors.New(string(body))
-	}
-
-	// Decode the body:
-	err = json.NewDecoder(res.Body).Decode(&getHostsResponse)
-	if err != nil {
-		return err
-	}
-
-	// Select a host:
-	potentialHosts := getHostsResponse.Data
 	if len(potentialHosts) == 0 {
-		return errors.New("unable to retrieve Audius host")
+		return errors.New("audius has no available hosts")
 	}
+
 	// First look for an "official" audius host if we can find one.
 	selectedHost := matchingSuffix(potentialHosts, "audius.co")
 	if selectedHost == "" {
