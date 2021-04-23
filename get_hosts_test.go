@@ -5,16 +5,13 @@ import (
 	"testing"
 )
 
-func TestSelectHost(t *testing.T) {
+func TestGetHosts(t *testing.T) {
 	client := NewClient("audiusclient")
-	err := client.SelectHost()
+	hosts, err := client.GetHosts()
 	if err != nil {
 		t.Fatalf("Failed to select host with error: %v", err.Error())
 	}
-	if client.currentHost == "" {
-		t.Fatal("failed to select host")
-	}
 
-	log.Printf("Selected host: %v", client.currentHost)
+	log.Printf("Fetched hosts: %v", hosts)
 	log.Println()
 }
