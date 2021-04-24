@@ -1,7 +1,5 @@
 package audiusclient
 
-// HostFetcher -
-
-type HostFetcher interface {
+type hostFetcher interface {
 	FetchHosts() ([]string, error)
 }

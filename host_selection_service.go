@@ -16,13 +16,13 @@ type HostSelectionService struct {
 	appName string
 
 	// The configuration for the service.
-	config HostSelectionServiceConfig
+	config hostSelectionServiceConfig
 
 	// The fetcher to use when updating the host list.
-	hostFetcher HostFetcher
+	fetcher hostFetcher
 
 	// The fetcher to use when healtch checking a host.
-	hostHealthCheckFetcher HostHealthCheckFetcher
+	healthCheckFetcher hostHealthCheckFetcher
 
 	// The list of possible hosts to choose from.
 	// An update to the host list is only considered successful if one or more hosts was found.
@@ -45,14 +45,14 @@ type HostSelectionService struct {
 func NewHostSelectionService(
 	appName string,
 ) *HostSelectionService {
-	hostSelectionServiceConfig := NewHostSelectionServiceConfig()
-	hostFetcher := NewDiscoveryHostFetcher(appName)
-	hostHealthCheckFetcher := NewDiscoveryHostHealthCheckFetcher(appName)
+	hostSelectionServiceConfig := newHostSelectionServiceConfig()
+	hostFetcher := newDiscoveryHostFetcher(appName)
+	hostHealthCheckFetcher := newDiscoveryHostHealthCheckFetcher(appName)
 	return &HostSelectionService{
-		appName:                appName,
-		config:                 hostSelectionServiceConfig,
-		hostFetcher:            hostFetcher,
-		hostHealthCheckFetcher: hostHealthCheckFetcher,
+		appName:            appName,
+		config:             hostSelectionServiceConfig,
+		fetcher:            hostFetcher,
+		healthCheckFetcher: hostHealthCheckFetcher,
 	}
 }
 
@@ -64,7 +64,7 @@ func (s *HostSelectionService) getHostList() ([]string, error) {
 	}
 
 	// We need to re-fetch the host list.
-	hosts, err := s.hostFetcher.FetchHosts()
+	hosts, err := s.fetcher.FetchHosts()
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func (s *HostSelectionService) GetSelectedHost() (string, error) {
 	sem := make(chan hostHealthCheckResult, len(hostsToTest))
 	for index, host := range hostsToTest {
 		go func(index int, host string) {
-			duration, err := s.hostHealthCheckFetcher.FetchHostHealthCheck(host)
+			duration, err := s.healthCheckFetcher.FetchHostHealthCheck(host)
 			res := hostHealthCheckResult{
 				Duration: duration,
 				Err:      err,

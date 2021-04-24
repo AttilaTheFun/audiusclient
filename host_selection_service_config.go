@@ -2,7 +2,7 @@ package audiusclient
 
 import "time"
 
-type HostSelectionServiceConfig struct {
+type hostSelectionServiceConfig struct {
 
 	// How long the host list is considered fresh for. Defaults to one day.
 	HostListTTL time.Duration
@@ -17,8 +17,8 @@ type HostSelectionServiceConfig struct {
 	SelectedHostTTL time.Duration
 }
 
-func NewHostSelectionServiceConfig() HostSelectionServiceConfig {
-	return HostSelectionServiceConfig{
+func newHostSelectionServiceConfig() hostSelectionServiceConfig {
+	return hostSelectionServiceConfig{
 		HostListTTL:               time.Hour * 24,
 		UnhealthyHostTTL:          time.Hour,
 		MaximumConcurrentRequests: 10,

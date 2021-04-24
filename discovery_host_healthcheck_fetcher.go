@@ -9,12 +9,12 @@ import (
 	"time"
 )
 
-type DiscoveryHostHealthCheckFetcher struct {
+type discoveryHostHealthCheckFetcher struct {
 	appName string
 }
 
-func NewDiscoveryHostHealthCheckFetcher(appName string) *DiscoveryHostHealthCheckFetcher {
-	return &DiscoveryHostHealthCheckFetcher{
+func newDiscoveryHostHealthCheckFetcher(appName string) *discoveryHostHealthCheckFetcher {
+	return &discoveryHostHealthCheckFetcher{
 		appName: appName,
 	}
 }
@@ -62,7 +62,7 @@ type fetchDiscoveryHostHealthCheckResponseType struct {
 	Data discoveryHostHealtcheckData
 }
 
-func (f DiscoveryHostHealthCheckFetcher) FetchHostHealthCheck(host string) (time.Duration, error) {
+func (f discoveryHostHealthCheckFetcher) FetchHostHealthCheck(host string) (time.Duration, error) {
 
 	// Create the request:
 	req, err := http.NewRequest("GET", host, nil)
