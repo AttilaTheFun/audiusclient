@@ -6,7 +6,8 @@ import (
 )
 
 func TestSearchPlaylists(t *testing.T) {
-	client := NewClient("audiusclient")
+	service := NewHostSelectionService("audiusclient")
+	client := NewClient(service)
 	searchPlaylistsResponse, err := client.SearchPlaylists("trap")
 	if err != nil {
 		t.Fatalf("Failed to search playlists with error: %v", err.Error())

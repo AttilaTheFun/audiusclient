@@ -6,10 +6,7 @@ import (
 )
 
 func TestHostSelectionServiceSelectHost(t *testing.T) {
-	hostFetcher := NewDiscoveryHostFetcher("audiusclient")
-	hostHealthCheckFetcher := NewDiscoveryHostHealthCheckFetcher("audiusclient")
-	config := NewHostSelectionServiceConfig()
-	service := NewHostSelectionService(hostFetcher, hostHealthCheckFetcher, config)
+	service := NewHostSelectionService("audiusclient")
 
 	// Select the host
 	selectedHost, err := service.GetSelectedHost()

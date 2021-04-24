@@ -6,7 +6,8 @@ import (
 )
 
 func TestGetTrackStream(t *testing.T) {
-	client := NewClient("audiusclient")
+	service := NewHostSelectionService("audiusclient")
+	client := NewClient(service)
 	streamURL, err := client.GetTrackStream("n3RMe")
 	if err != nil {
 		t.Fatalf("Failed to get track stream with error: %v", err.Error())

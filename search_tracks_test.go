@@ -6,7 +6,8 @@ import (
 )
 
 func TestSearchTracks(t *testing.T) {
-	client := NewClient("audiusclient")
+	service := NewHostSelectionService("audiusclient")
+	client := NewClient(service)
 	searchTracksResponse, err := client.SearchTracks("ON THE HUNT")
 	if err != nil {
 		t.Fatalf("Failed to search tracks with error: %v", err.Error())

@@ -3,10 +3,17 @@ package audiusclient
 import (
 	"errors"
 	"math/rand"
+	"sync"
 	"time"
 )
 
 type HostSelectionService struct {
+
+	// A mutex to use while performing updates on the service.
+	mu sync.Mutex
+
+	// The name of the application issuing requests to audius.
+	appName string
 
 	// The configuration for the service.
 	config HostSelectionServiceConfig
@@ -36,18 +43,20 @@ type HostSelectionService struct {
 }
 
 func NewHostSelectionService(
-	hostFetcher HostFetcher,
-	hostHealthCheckFetcher HostHealthCheckFetcher,
-	config HostSelectionServiceConfig,
+	appName string,
 ) *HostSelectionService {
+	hostSelectionServiceConfig := NewHostSelectionServiceConfig()
+	hostFetcher := NewDiscoveryHostFetcher(appName)
+	hostHealthCheckFetcher := NewDiscoveryHostHealthCheckFetcher(appName)
 	return &HostSelectionService{
+		appName:                appName,
+		config:                 hostSelectionServiceConfig,
 		hostFetcher:            hostFetcher,
 		hostHealthCheckFetcher: hostHealthCheckFetcher,
-		config:                 config,
 	}
 }
 
-func (s *HostSelectionService) GetHostList() ([]string, error) {
+func (s *HostSelectionService) getHostList() ([]string, error) {
 
 	// Check if the host list has been fetched recently enough - if so just short circuit and return it.
 	if len(s.hostList) != 0 && s.hostListUpdatedAt != nil && time.Since(*s.hostListUpdatedAt) < s.config.HostListTTL {
@@ -80,6 +89,8 @@ type hostHealthCheckResult struct {
 }
 
 func (s *HostSelectionService) GetSelectedHost() (string, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	// Check if the selected host has been fetched recently enough - if so just short circuit and return it.
 	if s.selectedHost != "" && s.selectedHostUpdatedAt != nil && time.Since(*s.selectedHostUpdatedAt) < s.config.SelectedHostTTL {
@@ -87,7 +98,7 @@ func (s *HostSelectionService) GetSelectedHost() (string, error) {
 	}
 
 	// We need to re-evaluate the hosts to select a new host.
-	hosts, err := s.GetHostList()
+	hosts, err := s.getHostList()
 	if err != nil {
 		return "", err
 	}

@@ -6,7 +6,8 @@ import (
 )
 
 func TestGetPlaylist(t *testing.T) {
-	client := NewClient("audiusclient")
+	service := NewHostSelectionService("audiusclient")
+	client := NewClient(service)
 	getPlaylistResponse, err := client.GetPlaylist("nqZmb") // "nZaYa"
 	if err != nil {
 		t.Fatalf("Failed to get playlist tracks with error: %v", err.Error())

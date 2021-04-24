@@ -1,15 +1,11 @@
 package audiusclient
 
-import "sync"
-
 type Client struct {
-	mu          sync.Mutex
-	appName     string
-	currentHost string
+	hostSelectionService *HostSelectionService
 }
 
-func NewClient(appName string) *Client {
+func NewClient(hostSelectionService *HostSelectionService) *Client {
 	return &Client{
-		appName: appName,
+		hostSelectionService: hostSelectionService,
 	}
 }
