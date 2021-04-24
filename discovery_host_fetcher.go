@@ -8,12 +8,12 @@ import (
 	"net/url"
 )
 
-type DiscoveryHostFetcher struct {
+type discoveryHostFetcher struct {
 	appName string
 }
 
-func NewDiscoveryHostFetcher(appName string) *DiscoveryHostFetcher {
-	return &DiscoveryHostFetcher{
+func newDiscoveryHostFetcher(appName string) *discoveryHostFetcher {
+	return &discoveryHostFetcher{
 		appName: appName,
 	}
 }
@@ -22,7 +22,7 @@ type fetchDiscoveryHostsResponseType struct {
 	Data []string
 }
 
-func (f DiscoveryHostFetcher) FetchHosts() ([]string, error) {
+func (f discoveryHostFetcher) FetchHosts() ([]string, error) {
 
 	// Parse the url:
 	parsedURL, err := url.Parse("https://api.audius.co")
