@@ -21,9 +21,15 @@ func (c *Client) GetTrack(trackID string) (GetTrackResponse, error) {
 	}
 	parsedURL.Path = "/v1/tracks/" + trackID
 
-	// Fetch the hosts:
+	// Create the request:
 	urlString := parsedURL.String()
-	res, err := http.Get(urlString)
+	req, err := http.NewRequest("GET", urlString, nil)
+	if err != nil {
+		return getTrackResponse, err
+	}
+
+	// Make the request:
+	res, err := httpClient.Do(req)
 	if err != nil {
 		return getTrackResponse, err
 	}

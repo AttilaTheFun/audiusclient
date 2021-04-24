@@ -12,38 +12,44 @@ type GetPlaylistTracksResponse struct {
 }
 
 func (c *Client) GetPlaylistTracks(playlistID string) (GetPlaylistTracksResponse, error) {
-	var getPlaylistTracks GetPlaylistTracksResponse
+	var getPlaylistTracksResponse GetPlaylistTracksResponse
 
 	// Parse the Audius host url:
 	parsedURL, err := c.GetHost()
 	if err != nil {
-		return getPlaylistTracks, err
+		return getPlaylistTracksResponse, err
 	}
 	parsedURL.Path = "/v1/playlists/" + playlistID + "/tracks"
 
-	// Fetch the hosts:
+	// Create the request:
 	urlString := parsedURL.String()
-	res, err := http.Get(urlString)
+	req, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
-		return getPlaylistTracks, err
+		return getPlaylistTracksResponse, err
+	}
+
+	// Make the request:
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return getPlaylistTracksResponse, err
 	}
 	defer res.Body.Close()
 	if res.StatusCode != 200 {
 		// Parse the error:
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
-			return getPlaylistTracks, err
+			return getPlaylistTracksResponse, err
 		}
 		err = errors.New(string(body))
 
-		return getPlaylistTracks, err
+		return getPlaylistTracksResponse, err
 	}
 
 	// Decode the body:
-	err = json.NewDecoder(res.Body).Decode(&getPlaylistTracks)
+	err = json.NewDecoder(res.Body).Decode(&getPlaylistTracksResponse)
 	if err != nil {
-		return getPlaylistTracks, err
+		return getPlaylistTracksResponse, err
 	}
 
-	return getPlaylistTracks, nil
+	return getPlaylistTracksResponse, nil
 }

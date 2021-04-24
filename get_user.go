@@ -21,9 +21,15 @@ func (c *Client) GetUser(userID string) (GetUserResponse, error) {
 	}
 	parsedURL.Path = "/v1/users/" + userID
 
-	// Fetch the hosts:
+	// Create the request:
 	urlString := parsedURL.String()
-	res, err := http.Get(urlString)
+	req, err := http.NewRequest("GET", urlString, nil)
+	if err != nil {
+		return getUserResponse, err
+	}
+
+	// Make the request:
+	res, err := httpClient.Do(req)
 	if err != nil {
 		return getUserResponse, err
 	}
