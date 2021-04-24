@@ -20,9 +20,15 @@ func (c *Client) GetHosts() ([]string, error) {
 		return nil, err
 	}
 
-	// Fetch the hosts:
+	// Create the request:
 	urlString := parsedURL.String()
-	res, err := http.Get(urlString)
+	req, err := http.NewRequest("GET", urlString, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Make the request:
+	res, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

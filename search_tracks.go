@@ -26,9 +26,15 @@ func (c *Client) SearchTracks(query string) (SearchTracksResponse, error) {
 	values.Set("query", query)
 	parsedURL.RawQuery = values.Encode()
 
-	// Fetch the hosts:
+	// Create the request:
 	urlString := parsedURL.String()
-	res, err := http.Get(urlString)
+	req, err := http.NewRequest("GET", urlString, nil)
+	if err != nil {
+		return searchTracksResponse, err
+	}
+
+	// Make the request:
+	res, err := httpClient.Do(req)
 	if err != nil {
 		return searchTracksResponse, err
 	}

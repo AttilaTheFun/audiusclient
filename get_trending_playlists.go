@@ -12,12 +12,12 @@ type GetTrendingPlaylistsResponse struct {
 }
 
 func (c *Client) GetTrendingPlaylists(time string) (GetTrendingPlaylistsResponse, error) {
-	var getTrendingPlaylists GetTrendingPlaylistsResponse
+	var getTrendingPlaylistsResponse GetTrendingPlaylistsResponse
 
 	// Parse the Audius host url:
 	parsedURL, err := c.GetHost()
 	if err != nil {
-		return getTrendingPlaylists, err
+		return getTrendingPlaylistsResponse, err
 	}
 	parsedURL.Path = "/v1/playlists/trending"
 
@@ -28,29 +28,35 @@ func (c *Client) GetTrendingPlaylists(time string) (GetTrendingPlaylistsResponse
 	}
 	parsedURL.RawQuery = values.Encode()
 
-	// Fetch the hosts:
+	// Create the request:
 	urlString := parsedURL.String()
-	res, err := http.Get(urlString)
+	req, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
-		return getTrendingPlaylists, err
+		return getTrendingPlaylistsResponse, err
+	}
+
+	// Make the request:
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return getTrendingPlaylistsResponse, err
 	}
 	defer res.Body.Close()
 	if res.StatusCode != 200 {
 		// Parse the error:
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
-			return getTrendingPlaylists, err
+			return getTrendingPlaylistsResponse, err
 		}
 		err = errors.New(string(body))
 
-		return getTrendingPlaylists, err
+		return getTrendingPlaylistsResponse, err
 	}
 
 	// Decode the body:
-	err = json.NewDecoder(res.Body).Decode(&getTrendingPlaylists)
+	err = json.NewDecoder(res.Body).Decode(&getTrendingPlaylistsResponse)
 	if err != nil {
-		return getTrendingPlaylists, err
+		return getTrendingPlaylistsResponse, err
 	}
 
-	return getTrendingPlaylists, nil
+	return getTrendingPlaylistsResponse, nil
 }
