@@ -6,7 +6,8 @@ import (
 )
 
 func TestGetTrendingPlaylists(t *testing.T) {
-	client := NewClient("audiusclient")
+	service := NewHostSelectionService("audiusclient")
+	client := NewClient(service)
 	getTrendingPlaylists, err := client.GetTrendingPlaylists("week")
 	if err != nil {
 		t.Fatalf("Failed to get trending playlists with error: %v", err.Error())
