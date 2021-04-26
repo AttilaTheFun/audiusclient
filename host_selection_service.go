@@ -3,6 +3,8 @@ package audiusclient
 import (
 	"errors"
 	"math/rand"
+	"sort"
+	"strings"
 	"sync"
 	"time"
 )
@@ -12,7 +14,7 @@ type HostSelectionService struct {
 	// A mutex to use while performing updates on the service.
 	mu sync.Mutex
 
-	// The name of the application issuing requests to audius.
+	// The name of the application issuing requests to Audius.
 	appName string
 
 	// The configuration for the service.
@@ -21,8 +23,8 @@ type HostSelectionService struct {
 	// The fetcher to use when updating the host list.
 	fetcher hostFetcher
 
-	// The fetcher to use when healtch checking a host.
-	healthCheckFetcher hostHealthCheckFetcher
+	// The service to use for health checking hosts.
+	healthCheckService *HostHealthCheckService
 
 	// The list of possible hosts to choose from.
 	// An update to the host list is only considered successful if one or more hosts was found.
@@ -45,14 +47,15 @@ type HostSelectionService struct {
 func NewHostSelectionService(
 	appName string,
 ) *HostSelectionService {
-	hostSelectionServiceConfig := newHostSelectionServiceConfig()
-	hostFetcher := newDiscoveryHostFetcher(appName)
-	hostHealthCheckFetcher := newDiscoveryHostHealthCheckFetcher(appName)
+	selectionServiceConfig := newHostSelectionServiceConfig()
+	fetcher := newDiscoveryHostFetcher(appName)
+	healthCheckFetcher := newDiscoveryHostHealthCheckFetcher(appName)
+	healthCheckService := NewHostHealthCheckService(healthCheckFetcher)
 	return &HostSelectionService{
 		appName:            appName,
-		config:             hostSelectionServiceConfig,
-		fetcher:            hostFetcher,
-		healthCheckFetcher: hostHealthCheckFetcher,
+		config:             selectionServiceConfig,
+		fetcher:            fetcher,
+		healthCheckService: healthCheckService,
 	}
 }
 
@@ -81,11 +84,6 @@ func (s *HostSelectionService) getHostList() ([]string, error) {
 	s.selectedHostUpdatedAt = nil
 
 	return hosts, nil
-}
-
-type hostHealthCheckResult struct {
-	Duration time.Duration
-	Err      error
 }
 
 func (s *HostSelectionService) GetSelectedHost() (string, error) {
@@ -132,38 +130,54 @@ func (s *HostSelectionService) GetSelectedHost() (string, error) {
 	}
 
 	// Health check the hosts:
-	results := make([]hostHealthCheckResult, len(hostsToTest))
-	sem := make(chan hostHealthCheckResult, len(hostsToTest))
-	for index, host := range hostsToTest {
-		go func(index int, host string) {
-			duration, err := s.healthCheckFetcher.FetchHostHealthCheck(host)
-			res := hostHealthCheckResult{
-				Duration: duration,
-				Err:      err,
-			}
-			results[index] = res
-			sem <- res
-		}(index, host)
-	}
-	for i := 0; i < len(hostsToTest); i++ {
-		<-sem
-	}
+	resultMap := s.healthCheckService.HealthCheckHosts(hostsToTest)
 
-	// Select the best host, and mark the hosts that failed their health checks as unhealthy:
-	var minimumDuration time.Duration
-	var selectedHost string
-	for index, healthCheckResult := range results {
-		host := hostsToTest[index]
+	// Mark the unhealthy hosts and put the healthy hosts in an array for sorting:
+	var healthyHosts []hostHealthCheckResult
+	for host, healthCheckResult := range resultMap {
 		if healthCheckResult.Err != nil {
 			s.unhealthyHostMap[host] = time.Now()
-		} else if selectedHost == "" || healthCheckResult.Duration < minimumDuration {
-			minimumDuration = healthCheckResult.Duration
-			selectedHost = host
+		} else {
+			healthyHosts = append(healthyHosts, healthCheckResult)
 		}
 	}
-	if selectedHost == "" {
-		return "", errors.New("all tested hosts failed their health checks")
+
+	// If the healthy hosts are empty, short circuit and return.
+	if len(healthyHosts) == 0 {
+		return "", errors.New("all hosts are currently unhealthy")
 	}
+
+	// Sort the healthy hosts in order of preference.
+	sort.Slice(healthyHosts, func(i, j int) bool {
+		firstHostResult := healthyHosts[i]
+		secondHostResult := healthyHosts[j]
+
+		// We prefer Audius hosts above all others:
+		isFirstHostAudius := strings.HasSuffix(firstHostResult.Host, "audius.co")
+		isSecondHostAudius := strings.HasSuffix(secondHostResult.Host, "audius.co")
+		if isFirstHostAudius && !isSecondHostAudius {
+			return true
+		}
+		if isSecondHostAudius && !isFirstHostAudius {
+			return false
+		}
+
+		// We prefer staked hosts over others:
+		isFirstHostStaked := strings.HasSuffix(firstHostResult.Host, "staked.cloud")
+		isSecondHostStaked := strings.HasSuffix(secondHostResult.Host, "staked.cloud")
+		if isFirstHostStaked && !isSecondHostStaked {
+			return true
+		}
+		if isSecondHostStaked && !isFirstHostStaked {
+			return false
+		}
+
+		// We prefer faster hosts last:
+		return firstHostResult.Duration < secondHostResult.Duration
+	})
+
+	// Select the first host in order of preference:
+	selectedHost := healthyHosts[0].Host
 	s.selectedHost = selectedHost
 
 	return selectedHost, nil

@@ -1,0 +1,17 @@
+package audiusclient
+
+import (
+	"log"
+	"testing"
+)
+
+func TestCreatorHostHealthCheckFetcher(t *testing.T) {
+	hostHealthCheckFetcher := newCreatorHostHealthCheckFetcher("audiusclient")
+	duration, err := hostHealthCheckFetcher.FetchHostHealthCheck("https://creatornode2.audius.co")
+	if err != nil {
+		t.Fatalf("Failed to health check host with error: %v", err.Error())
+	}
+
+	log.Printf("Health checked host in: %v", duration)
+	log.Println()
+}
