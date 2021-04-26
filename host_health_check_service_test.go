@@ -6,7 +6,7 @@ import (
 )
 
 func TestHostHealthCheckServiceSelectHost(t *testing.T) {
-	fetcher := newCreatorHostHealthCheckFetcher("audiusclient")
+	fetcher := NewCreatorHostHealthCheckFetcher("audiusclient")
 	service := NewHostHealthCheckService(fetcher)
 
 	// Health check the hosts:

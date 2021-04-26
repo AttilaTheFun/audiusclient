@@ -13,7 +13,7 @@ type discoveryHostHealthCheckFetcher struct {
 	appName string
 }
 
-func newDiscoveryHostHealthCheckFetcher(appName string) *discoveryHostHealthCheckFetcher {
+func NewDiscoveryHostHealthCheckFetcher(appName string) *discoveryHostHealthCheckFetcher {
 	return &discoveryHostHealthCheckFetcher{
 		appName: appName,
 	}

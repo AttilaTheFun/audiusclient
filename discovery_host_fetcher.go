@@ -12,7 +12,7 @@ type discoveryHostFetcher struct {
 	appName string
 }
 
-func newDiscoveryHostFetcher(appName string) *discoveryHostFetcher {
+func NewDiscoveryHostFetcher(appName string) *discoveryHostFetcher {
 	return &discoveryHostFetcher{
 		appName: appName,
 	}
