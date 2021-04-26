@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-func TestCreatorHostHealthCheckFetcher(t *testing.T) {
-	hostHealthCheckFetcher := newCreatorHostHealthCheckFetcher("audiusclient")
-	duration, err := hostHealthCheckFetcher.FetchHostHealthCheck("https://creatornode2.audius.co")
+func TestDiscoveryHostHealthCheckFetcher(t *testing.T) {
+	hostHealthCheckFetcher := NewDiscoveryHostHealthCheckFetcher("audiusclient")
+	duration, err := hostHealthCheckFetcher.FetchHostHealthCheck("https://discoveryprovider.audius2.prod-us-west-2.staked.cloud")
 	if err != nil {
 		t.Fatalf("Failed to health check host with error: %v", err.Error())
 	}

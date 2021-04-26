@@ -48,8 +48,8 @@ func NewHostSelectionService(
 	appName string,
 ) *HostSelectionService {
 	selectionServiceConfig := newHostSelectionServiceConfig()
-	fetcher := newDiscoveryHostFetcher(appName)
-	healthCheckFetcher := newDiscoveryHostHealthCheckFetcher(appName)
+	fetcher := NewDiscoveryHostFetcher(appName)
+	healthCheckFetcher := NewDiscoveryHostHealthCheckFetcher(appName)
 	healthCheckService := NewHostHealthCheckService(healthCheckFetcher)
 	return &HostSelectionService{
 		appName:            appName,
