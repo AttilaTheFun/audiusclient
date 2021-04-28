@@ -14,6 +14,6 @@ func TestGetTrack(t *testing.T) {
 	}
 
 	t.Logf("Get track response: %v", getTrackResponse)
-	log.Println(getTrackResponse.Data.Artwork["1000x1000"])
+	log.Println(getTrackResponse.Data.StreamURL)
 	log.Println()
 }

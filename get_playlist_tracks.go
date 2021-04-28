@@ -51,5 +51,12 @@ func (c *Client) GetPlaylistTracks(playlistID string) (GetPlaylistTracksResponse
 		return getPlaylistTracksResponse, err
 	}
 
+	// Set the stream urls on all of the tracks:
+	for _, track := range getPlaylistTracksResponse.Data {
+		streamURL := *parsedURL
+		streamURL.Path = "/v1/tracks/" + track.ID + "/stream"
+		track.StreamURL = streamURL.String()
+	}
+
 	return getPlaylistTracksResponse, nil
 }

@@ -61,5 +61,12 @@ func (c *Client) GetTrendingTracks(genre string, time string) (GetTrendingTracks
 		return getTrendingTracksResponse, err
 	}
 
+	// Set the stream urls on all of the tracks:
+	for _, track := range getTrendingTracksResponse.Data {
+		streamURL := *parsedURL
+		streamURL.Path = "/v1/tracks/" + track.ID + "/stream"
+		track.StreamURL = streamURL.String()
+	}
+
 	return getTrendingTracksResponse, nil
 }
