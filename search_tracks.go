@@ -56,5 +56,12 @@ func (c *Client) SearchTracks(query string) (SearchTracksResponse, error) {
 		return searchTracksResponse, err
 	}
 
+	// Set the stream urls on all of the tracks:
+	for _, track := range searchTracksResponse.Data {
+		streamURL := *parsedURL
+		streamURL.Path = "/v1/tracks/" + track.ID + "/stream"
+		track.StreamURL = streamURL.String()
+	}
+
 	return searchTracksResponse, nil
 }

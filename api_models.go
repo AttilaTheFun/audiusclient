@@ -40,6 +40,8 @@ type APITrack struct {
 	FavoriteCount int `json:"favorite_count"`
 
 	User APIUser `json:"user"`
+
+	StreamURL string `json:"-"`
 }
 
 type APIPlaylist struct {

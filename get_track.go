@@ -51,5 +51,10 @@ func (c *Client) GetTrack(trackID string) (GetTrackResponse, error) {
 		return getTrackResponse, err
 	}
 
+	// Set the stream urls on all of the tracks:
+	streamURL := *parsedURL
+	streamURL.Path = "/v1/tracks/" + getTrackResponse.Data.ID + "/stream"
+	getTrackResponse.Data.StreamURL = streamURL.String()
+
 	return getTrackResponse, nil
 }
