@@ -2,6 +2,7 @@ package audiusclient
 
 import (
 	"errors"
+	"log"
 	"math/rand"
 	"sort"
 	"strings"
@@ -88,7 +89,18 @@ func (s *HostSelectionService) getHostList() ([]string, error) {
 
 func (s *HostSelectionService) GetSelectedHost() (string, error) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
+
+	startTime := time.Now()
+	log.Printf("Started host selection at: %v", startTime)
+	log.Println()
+	defer func() {
+		endTime := time.Now()
+		duration := endTime.Sub(startTime)
+		log.Printf("Completed host selection with host: %v at: %v, duration: %v", s.selectedHost, endTime, duration)
+		log.Println()
+
+		s.mu.Unlock()
+	}()
 
 	// Check if the selected host has been fetched recently enough - if so just short circuit and return it.
 	if s.selectedHost != "" && s.selectedHostUpdatedAt != nil && time.Since(*s.selectedHostUpdatedAt) < s.config.SelectedHostTTL {
@@ -179,6 +191,8 @@ func (s *HostSelectionService) GetSelectedHost() (string, error) {
 	// Select the first host in order of preference:
 	selectedHost := healthyHosts[0].Host
 	s.selectedHost = selectedHost
+	t := time.Now()
+	s.selectedHostUpdatedAt = &t
 
 	return selectedHost, nil
 }
