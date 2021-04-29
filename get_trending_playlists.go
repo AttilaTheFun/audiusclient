@@ -14,22 +14,23 @@ type GetTrendingPlaylistsResponse struct {
 func (c *Client) GetTrendingPlaylists(time string) (GetTrendingPlaylistsResponse, error) {
 	var getTrendingPlaylistsResponse GetTrendingPlaylistsResponse
 
-	// Parse the Audius host url:
-	parsedURL, err := c.GetHost()
+	// Select an audius host:
+	selectedHostURL, err := c.GetHost()
 	if err != nil {
 		return getTrendingPlaylistsResponse, err
 	}
-	parsedURL.Path = "/v1/playlists/trending"
+	requestURL := *selectedHostURL
+	requestURL.Path = "/v1/playlists/trending"
 
 	// Build the query:
-	values := parsedURL.Query()
+	values := requestURL.Query()
 	if time != "" {
 		values.Set("time", time)
 	}
-	parsedURL.RawQuery = values.Encode()
+	requestURL.RawQuery = values.Encode()
 
 	// Create the request:
-	urlString := parsedURL.String()
+	urlString := requestURL.String()
 	req, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
 		return getTrendingPlaylistsResponse, err

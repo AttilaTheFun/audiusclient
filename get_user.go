@@ -14,15 +14,16 @@ type GetUserResponse struct {
 func (c *Client) GetUser(userID string) (GetUserResponse, error) {
 	var getUserResponse GetUserResponse
 
-	// Parse the Audius host url:
-	parsedURL, err := c.GetHost()
+	// Select an audius host:
+	selectedHostURL, err := c.GetHost()
 	if err != nil {
 		return getUserResponse, err
 	}
-	parsedURL.Path = "/v1/users/" + userID
+	requestURL := *selectedHostURL
+	requestURL.Path = "/v1/users/" + userID
 
 	// Create the request:
-	urlString := parsedURL.String()
+	urlString := requestURL.String()
 	req, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
 		return getUserResponse, err

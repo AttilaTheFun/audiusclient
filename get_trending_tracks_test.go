@@ -14,6 +14,6 @@ func TestGetTrendingTracks(t *testing.T) {
 	}
 
 	t.Logf("Get trending tracks response: %v", getTrendingTracks)
-	log.Printf("%+v", getTrendingTracks.Data[0].Title)
+	log.Printf("%+v", getTrendingTracks.Data[0].StreamURL)
 	log.Println()
 }

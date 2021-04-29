@@ -14,25 +14,26 @@ type GetTrendingTracksResponse struct {
 func (c *Client) GetTrendingTracks(genre string, time string) (GetTrendingTracksResponse, error) {
 	var getTrendingTracksResponse GetTrendingTracksResponse
 
-	// Parse the Audius host url:
-	parsedURL, err := c.GetHost()
+	// Select an audius host:
+	selectedHostURL, err := c.GetHost()
 	if err != nil {
 		return getTrendingTracksResponse, err
 	}
-	parsedURL.Path = "/v1/tracks/trending"
+	requestURL := *selectedHostURL
+	requestURL.Path = "/v1/tracks/trending"
 
 	// Build the query:
-	values := parsedURL.Query()
+	values := requestURL.Query()
 	if genre != "" {
 		values.Set("genre", genre)
 	}
 	if time != "" {
 		values.Set("time", time)
 	}
-	parsedURL.RawQuery = values.Encode()
+	requestURL.RawQuery = values.Encode()
 
 	// Create the request:
-	urlString := parsedURL.String()
+	urlString := requestURL.String()
 	req, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
 		return getTrendingTracksResponse, err
@@ -62,10 +63,11 @@ func (c *Client) GetTrendingTracks(genre string, time string) (GetTrendingTracks
 	}
 
 	// Set the stream urls on all of the tracks:
-	for _, track := range getTrendingTracksResponse.Data {
-		streamURL := *parsedURL
+	for index, track := range getTrendingTracksResponse.Data {
+		streamURL := *selectedHostURL
 		streamURL.Path = "/v1/tracks/" + track.ID + "/stream"
 		track.StreamURL = streamURL.String()
+		getTrendingTracksResponse.Data[index] = track
 	}
 
 	return getTrendingTracksResponse, nil

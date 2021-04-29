@@ -14,20 +14,21 @@ type SearchTracksResponse struct {
 func (c *Client) SearchTracks(query string) (SearchTracksResponse, error) {
 	var searchTracksResponse SearchTracksResponse
 
-	// Parse the Audius host url:
-	parsedURL, err := c.GetHost()
+	// Select an audius host:
+	selectedHostURL, err := c.GetHost()
 	if err != nil {
 		return searchTracksResponse, err
 	}
-	parsedURL.Path = "/v1/tracks/search"
+	requestURL := *selectedHostURL
+	requestURL.Path = "/v1/tracks/search"
 
 	// Build the query:
-	values := parsedURL.Query()
+	values := requestURL.Query()
 	values.Set("query", query)
-	parsedURL.RawQuery = values.Encode()
+	requestURL.RawQuery = values.Encode()
 
 	// Create the request:
-	urlString := parsedURL.String()
+	urlString := requestURL.String()
 	req, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
 		return searchTracksResponse, err
@@ -57,10 +58,11 @@ func (c *Client) SearchTracks(query string) (SearchTracksResponse, error) {
 	}
 
 	// Set the stream urls on all of the tracks:
-	for _, track := range searchTracksResponse.Data {
-		streamURL := *parsedURL
+	for index, track := range searchTracksResponse.Data {
+		streamURL := *selectedHostURL
 		streamURL.Path = "/v1/tracks/" + track.ID + "/stream"
 		track.StreamURL = streamURL.String()
+		searchTracksResponse.Data[index] = track
 	}
 
 	return searchTracksResponse, nil

@@ -14,15 +14,16 @@ type GetTrackResponse struct {
 func (c *Client) GetTrack(trackID string) (GetTrackResponse, error) {
 	var getTrackResponse GetTrackResponse
 
-	// Parse the Audius host url:
-	parsedURL, err := c.GetHost()
+	// Select an audius host:
+	selectedHostURL, err := c.GetHost()
 	if err != nil {
 		return getTrackResponse, err
 	}
-	parsedURL.Path = "/v1/tracks/" + trackID
+	requestURL := *selectedHostURL
+	requestURL.Path = "/v1/tracks/" + trackID
 
 	// Create the request:
-	urlString := parsedURL.String()
+	urlString := requestURL.String()
 	req, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
 		return getTrackResponse, err
@@ -52,9 +53,11 @@ func (c *Client) GetTrack(trackID string) (GetTrackResponse, error) {
 	}
 
 	// Set the stream urls on all of the tracks:
-	streamURL := *parsedURL
+	streamURL := *selectedHostURL
 	streamURL.Path = "/v1/tracks/" + getTrackResponse.Data.ID + "/stream"
-	getTrackResponse.Data.StreamURL = streamURL.String()
+	track := getTrackResponse.Data
+	track.StreamURL = streamURL.String()
+	getTrackResponse.Data = track
 
 	return getTrackResponse, nil
 }

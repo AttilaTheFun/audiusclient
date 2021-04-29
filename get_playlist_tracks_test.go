@@ -14,6 +14,6 @@ func TestGetPlaylistTracks(t *testing.T) {
 	}
 
 	t.Logf("Get playlist tracks response: %v", getPlaylistTracksResponse)
-	log.Println(getPlaylistTracksResponse.Data[0].Title)
+	log.Println(getPlaylistTracksResponse.Data[0].StreamURL)
 	log.Println()
 }
