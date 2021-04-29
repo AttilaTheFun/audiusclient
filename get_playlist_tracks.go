@@ -14,15 +14,16 @@ type GetPlaylistTracksResponse struct {
 func (c *Client) GetPlaylistTracks(playlistID string) (GetPlaylistTracksResponse, error) {
 	var getPlaylistTracksResponse GetPlaylistTracksResponse
 
-	// Parse the Audius host url:
-	parsedURL, err := c.GetHost()
+	// Select an audius host:
+	selectedHostURL, err := c.GetHost()
 	if err != nil {
 		return getPlaylistTracksResponse, err
 	}
-	parsedURL.Path = "/v1/playlists/" + playlistID + "/tracks"
+	requestURL := *selectedHostURL
+	requestURL.Path = "/v1/playlists/" + playlistID + "/tracks"
 
 	// Create the request:
-	urlString := parsedURL.String()
+	urlString := requestURL.String()
 	req, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
 		return getPlaylistTracksResponse, err
@@ -52,10 +53,11 @@ func (c *Client) GetPlaylistTracks(playlistID string) (GetPlaylistTracksResponse
 	}
 
 	// Set the stream urls on all of the tracks:
-	for _, track := range getPlaylistTracksResponse.Data {
-		streamURL := *parsedURL
+	for index, track := range getPlaylistTracksResponse.Data {
+		streamURL := *selectedHostURL
 		streamURL.Path = "/v1/tracks/" + track.ID + "/stream"
 		track.StreamURL = streamURL.String()
+		getPlaylistTracksResponse.Data[index] = track
 	}
 
 	return getPlaylistTracksResponse, nil

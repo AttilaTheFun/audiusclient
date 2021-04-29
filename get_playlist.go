@@ -20,15 +20,16 @@ type internalGetPlaylistResponse struct {
 func (c *Client) GetPlaylist(playlistID string) (GetPlaylistResponse, error) {
 	var getPlaylistResponse GetPlaylistResponse
 
-	// Parse the Audius host url:
-	parsedURL, err := c.GetHost()
+	// Select an audius host:
+	selectedHostURL, err := c.GetHost()
 	if err != nil {
 		return getPlaylistResponse, err
 	}
-	parsedURL.Path = "/v1/playlists/" + playlistID
+	requestURL := *selectedHostURL
+	requestURL.Path = "/v1/playlists/" + playlistID
 
 	// Create the request:
-	urlString := parsedURL.String()
+	urlString := requestURL.String()
 	req, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
 		return getPlaylistResponse, err

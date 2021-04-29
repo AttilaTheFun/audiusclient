@@ -14,20 +14,21 @@ type SearchPlaylistsResponse struct {
 func (c *Client) SearchPlaylists(query string) (SearchPlaylistsResponse, error) {
 	var searchPlaylistsResponse SearchPlaylistsResponse
 
-	// Parse the Audius host url:
-	parsedURL, err := c.GetHost()
+	// Select an audius host:
+	selectedHostURL, err := c.GetHost()
 	if err != nil {
 		return searchPlaylistsResponse, err
 	}
-	parsedURL.Path = "/v1/playlists/search"
+	requestURL := *selectedHostURL
+	requestURL.Path = "/v1/playlists/search"
 
 	// Build the query:
-	values := parsedURL.Query()
+	values := requestURL.Query()
 	values.Set("query", query)
-	parsedURL.RawQuery = values.Encode()
+	requestURL.RawQuery = values.Encode()
 
 	// Create the request:
-	urlString := parsedURL.String()
+	urlString := requestURL.String()
 	req, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
 		return searchPlaylistsResponse, err

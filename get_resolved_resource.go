@@ -7,20 +7,21 @@ import (
 	"strings"
 )
 
-// GetResolvedResource - Resolves an audius url into a resource type (playlist, track, or user) and resource ID.
+// GetResolvedResource -
 func (c *Client) GetResolvedResource(audiusURL string) (resourceType string, resourceID string, err error) {
 
-	// Parse the Audius host url:
-	parsedURL, err := c.GetHost()
+	// Select an audius host:
+	selectedHostURL, err := c.GetHost()
 	if err != nil {
 		return
 	}
-	parsedURL.Path = "/v1/resolve"
+	requestURL := *selectedHostURL
+	requestURL.Path = "/v1/resolve"
 
 	// Build the query:
-	values := parsedURL.Query()
+	values := requestURL.Query()
 	values.Set("url", audiusURL)
-	parsedURL.RawQuery = values.Encode()
+	requestURL.RawQuery = values.Encode()
 
 	// Create a client that won't redirect:
 	client := &http.Client{
@@ -30,7 +31,7 @@ func (c *Client) GetResolvedResource(audiusURL string) (resourceType string, res
 	}
 
 	// Fetch the hosts:
-	urlString := parsedURL.String()
+	urlString := requestURL.String()
 	res, err := client.Get(urlString)
 	if err != nil {
 		return
