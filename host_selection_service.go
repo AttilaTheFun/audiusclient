@@ -2,7 +2,6 @@ package audiusclient
 
 import (
 	"errors"
-	"log"
 	"math/rand"
 	"sort"
 	"strings"
@@ -90,15 +89,7 @@ func (s *HostSelectionService) getHostList() ([]string, error) {
 func (s *HostSelectionService) GetSelectedHost() (string, error) {
 	s.mu.Lock()
 
-	startTime := time.Now()
-	log.Printf("Started host selection at: %v", startTime)
-	log.Println()
 	defer func() {
-		endTime := time.Now()
-		duration := endTime.Sub(startTime)
-		log.Printf("Completed host selection with host: %v at: %v, duration: %v", s.selectedHost, endTime, duration)
-		log.Println()
-
 		s.mu.Unlock()
 	}()
 
