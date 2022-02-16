@@ -4,7 +4,6 @@ import (
 	"errors"
 	"math/rand"
 	"sort"
-	"strings"
 	"sync"
 	"time"
 )
@@ -155,25 +154,25 @@ func (s *HostSelectionService) GetSelectedHost() (string, error) {
 		firstHostResult := healthyHosts[i]
 		secondHostResult := healthyHosts[j]
 
-		// We prefer Audius hosts above all others:
-		isFirstHostAudius := strings.HasSuffix(firstHostResult.Host, "audius.co")
-		isSecondHostAudius := strings.HasSuffix(secondHostResult.Host, "audius.co")
-		if isFirstHostAudius && !isSecondHostAudius {
-			return true
-		}
-		if isSecondHostAudius && !isFirstHostAudius {
-			return false
-		}
+		// // We prefer Audius hosts above all others:
+		// isFirstHostAudius := strings.HasSuffix(firstHostResult.Host, "audius.co")
+		// isSecondHostAudius := strings.HasSuffix(secondHostResult.Host, "audius.co")
+		// if isFirstHostAudius && !isSecondHostAudius {
+		// 	return true
+		// }
+		// if isSecondHostAudius && !isFirstHostAudius {
+		// 	return false
+		// }
 
-		// We prefer staked hosts over others:
-		isFirstHostStaked := strings.HasSuffix(firstHostResult.Host, "staked.cloud")
-		isSecondHostStaked := strings.HasSuffix(secondHostResult.Host, "staked.cloud")
-		if isFirstHostStaked && !isSecondHostStaked {
-			return true
-		}
-		if isSecondHostStaked && !isFirstHostStaked {
-			return false
-		}
+		// // We prefer staked hosts over others:
+		// isFirstHostStaked := strings.HasSuffix(firstHostResult.Host, "staked.cloud")
+		// isSecondHostStaked := strings.HasSuffix(secondHostResult.Host, "staked.cloud")
+		// if isFirstHostStaked && !isSecondHostStaked {
+		// 	return true
+		// }
+		// if isSecondHostStaked && !isFirstHostStaked {
+		// 	return false
+		// }
 
 		// We prefer faster hosts last:
 		return firstHostResult.Duration < secondHostResult.Duration
