@@ -1,3 +1,4 @@
 .DS_STORE
 .vscode
 vendor/
+ignore_*
